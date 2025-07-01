@@ -11,7 +11,7 @@ connectDB();
 app.use(
   cors([
     {
-      origin: process.env.CORS_ORIGIN || "http://localhost:5000" || "http://localhost:3000" ,
+      origin: process.env.CORS_ORIGIN || "http://localhost:5000" || "https://digireal-affiliate-jw3j.onrender.com" ,
       methods: ["GET", "POST", "PUT", "DELETE"],
       credentials: true,
     },
