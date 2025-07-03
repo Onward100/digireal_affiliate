@@ -32,6 +32,10 @@ const PropertySchema = new mongoose.Schema({
     type: [String],
     required: true,
   },
+   videos: {
+    type: [String],
+    required: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

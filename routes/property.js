@@ -9,22 +9,25 @@ const Property = require("../models/property.js");
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-// Helper to upload buffer to Cloudinary
-const uploadToCloudinary = (buffer) => {
+// Helper to upload buffer to Cloudinary with correct resource type
+const uploadToCloudinary = (buffer, mimetype) => {
   return new Promise((resolve, reject) => {
+    const resourceType = mimetype.startsWith("video") ? "video" : "image";
+
     const stream = cloudinary.uploader.upload_stream(
-      { folder: "properties" },
+      { folder: "properties", resource_type: resourceType },
       (error, result) => {
         if (error) return reject(error);
         resolve(result.secure_url);
       }
     );
+
     streamifier.createReadStream(buffer).pipe(stream);
   });
 };
 
-// Create a new property with images
-router.post("/", upload.array("images"), async (req, res) => {
+// 🆕 Create a new property with images and videos
+router.post("/", upload.array("files"), async (req, res) => {
   try {
     const { title, description, price, slot, slotSize, project, location } =
       req.body;
@@ -36,15 +39,22 @@ router.post("/", upload.array("images"), async (req, res) => {
       });
     }
 
-    // Upload images to Cloudinary and get URLs
-    const uploadedImages = await Promise.all(
-      req.files.map(async (file) => {
-        const imageUrl = await uploadToCloudinary(file.buffer);
-        return imageUrl;
-      })
-    );
+    const uploadedImages = [];
+    const uploadedVideos = [];
 
-    // Create property
+    if (req.files && req.files.length > 0) {
+      await Promise.all(
+        req.files.map(async (file) => {
+          const url = await uploadToCloudinary(file.buffer, file.mimetype);
+          if (file.mimetype.startsWith("video")) {
+            uploadedVideos.push(url);
+          } else {
+            uploadedImages.push(url);
+          }
+        })
+      );
+    }
+
     const property = new Property({
       title,
       description,
@@ -54,6 +64,7 @@ router.post("/", upload.array("images"), async (req, res) => {
       project,
       location,
       images: uploadedImages,
+      videos: uploadedVideos,
     });
 
     await property.save();
@@ -64,7 +75,45 @@ router.post("/", upload.array("images"), async (req, res) => {
   }
 });
 
-//  Get all properties
+// 🆕 Update a property by ID
+router.put("/:id", upload.array("files"), async (req, res) => {
+  try {
+    const updates = req.body;
+
+    const uploadedImages = [];
+    const uploadedVideos = [];
+
+    if (req.files && req.files.length > 0) {
+      await Promise.all(
+        req.files.map(async (file) => {
+          const url = await uploadToCloudinary(file.buffer, file.mimetype);
+          if (file.mimetype.startsWith("video")) {
+            uploadedVideos.push(url);
+          } else {
+            uploadedImages.push(url);
+          }
+        })
+      );
+    }
+
+    if (uploadedImages.length > 0) updates.images = uploadedImages;
+    if (uploadedVideos.length > 0) updates.videos = uploadedVideos;
+
+    const property = await Property.findByIdAndUpdate(req.params.id, updates, {
+      new: true,
+    });
+
+    if (!property)
+      return res.status(404).json({ message: "Property not found" });
+
+    res.status(200).json(property);
+  } catch (error) {
+    console.error("Error updating property:", error);
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// 🆕 Get all properties
 router.get("/", async (req, res) => {
   try {
     const properties = await Property.find();
@@ -74,7 +123,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-//  Get a property by ID
+// 🆕 Get a property by ID
 router.get("/:id", async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -86,36 +135,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-//  Update a property by ID
-router.put("/:id", upload.array("images"), async (req, res) => {
-  try {
-    const updates = req.body;
-
-    // If new images are uploaded, upload them to Cloudinary
-    if (req.files && req.files.length > 0) {
-      const uploadedImages = await Promise.all(
-        req.files.map(async (file) => {
-          const imageUrl = await uploadToCloudinary(file.buffer);
-          return imageUrl;
-        })
-      );
-      updates.images = uploadedImages;
-    }
-
-    const property = await Property.findByIdAndUpdate(req.params.id, updates, {
-      new: true,
-    });
-    if (!property)
-      return res.status(404).json({ message: "Property not found" });
-
-    res.status(200).json(property);
-  } catch (error) {
-    console.error("Error updating property:", error);
-    res.status(400).json({ message: error.message });
-  }
-});
-
-//  Delete a property by ID
+// 🆕 Delete a property by ID
 router.delete("/:id", async (req, res) => {
   try {
     const property = await Property.findByIdAndDelete(req.params.id);
