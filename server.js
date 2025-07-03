@@ -26,6 +26,6 @@ app.use(express.json());
 app.use("/api/auth", router);
 app.use("/api/v1/properties", propertyRouter);
 
-app.listen(process.env.PORT || 5000, () => {
+app.listen(process.env.PORT || 8080, () => {
   console.log(`Server is running on port ${process.env.PORT || 5000}`);
 });
