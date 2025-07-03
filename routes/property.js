@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 const cloudinary = require("../config/cloudinary");
 const streamifier = require("streamifier");
-const Property = require("../models/Property");
+const Property = require("../models/property.js");
 
 // Multer memory storage
 const storage = multer.memoryStorage();
@@ -31,11 +31,9 @@ router.post("/", upload.array("images"), async (req, res) => {
 
     // Validate required fields
     if (!title || !description || !price || !location) {
-      return res
-        .status(400)
-        .json({
-          message: "Title, description, price, and location are required",
-        });
+      return res.status(400).json({
+        message: "Title, description, price, and location are required",
+      });
     }
 
     // Upload images to Cloudinary and get URLs
