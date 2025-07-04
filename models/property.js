@@ -20,6 +20,10 @@ const PropertySchema = new mongoose.Schema({
     type: String,
     // required: true,
   },
+   slotPrice: {
+    type: String,
+    // required: true,
+  },
   project: {
     type: String,
     // required: true,
