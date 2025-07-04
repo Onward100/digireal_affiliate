@@ -14,15 +14,15 @@ const PropertySchema = new mongoose.Schema({
   },
   slot: {
     type: String,
-    required: true,
+    // required: true,
   },
   slotSize: {
     type: String,
-    required: true,
+    // required: true,
   },
   project: {
     type: String,
-    required: true,
+    // required: true,
   },
   location: {
     type: String,
