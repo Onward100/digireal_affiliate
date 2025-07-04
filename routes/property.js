@@ -26,7 +26,7 @@ const uploadToCloudinary = (buffer, mimetype) => {
   });
 };
 
-// 🆕 Create a new property with images and videos
+//  Create a new property with images and videos
 router.post("/", upload.array("files"), async (req, res) => {
   try {
     const { title, description, price, slot, slotSize, project, location } =
@@ -75,7 +75,7 @@ router.post("/", upload.array("files"), async (req, res) => {
   }
 });
 
-// 🆕 Update a property by ID
+//  Update a property by ID
 router.put("/:id", upload.array("files"), async (req, res) => {
   try {
     const updates = req.body;
@@ -113,7 +113,7 @@ router.put("/:id", upload.array("files"), async (req, res) => {
   }
 });
 
-// 🆕 Get all properties
+//  Get all properties
 router.get("/", async (req, res) => {
   try {
     const properties = await Property.find();
@@ -123,7 +123,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 🆕 Get a property by ID
+//  Get a property by ID
 router.get("/:id", async (req, res) => {
   try {
     const property = await Property.findById(req.params.id);
@@ -135,7 +135,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// 🆕 Delete a property by ID
+//  Delete a property by ID
 router.delete("/:id", async (req, res) => {
   try {
     const property = await Property.findByIdAndDelete(req.params.id);
