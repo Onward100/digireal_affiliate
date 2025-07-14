@@ -4,12 +4,6 @@ const multer = require("multer");
 const cloudinary = require("../config/cloudinary");
 const streamifier = require("streamifier");
 const Property = require("../models/property.js");
-const cors = require("cors");
-
-//add cors
-router.use(cors());
-// Middleware to parse JSON bodies
-router.use(express.json());
 
 // Multer memory storage
 const storage = multer.memoryStorage();
