@@ -80,6 +80,19 @@ router.put("/:id", upload.array("files"), async (req, res) => {
   try {
     const updates = req.body;
 
+    // Parse existingImages safely
+    let existingImages = [];
+    if (updates.existingImages) {
+      try {
+        existingImages = JSON.parse(updates.existingImages);
+      } catch (err) {
+        console.error("Failed to parse existingImages:", err);
+        return res
+          .status(400)
+          .json({ message: "Invalid existingImages format" });
+      }
+    }
+
     const uploadedImages = [];
     const uploadedVideos = [];
 
@@ -96,8 +109,13 @@ router.put("/:id", upload.array("files"), async (req, res) => {
       );
     }
 
-    if (uploadedImages.length > 0) updates.images = uploadedImages;
-    if (uploadedVideos.length > 0) updates.videos = uploadedVideos;
+    // Combine existing and newly uploaded images
+    updates.images = existingImages.concat(uploadedImages);
+
+    if (uploadedVideos.length > 0) {
+      // Append to existing videos if your schema supports it
+      updates.videos = uploadedVideos;
+    }
 
     const property = await Property.findByIdAndUpdate(req.params.id, updates, {
       new: true,
@@ -109,7 +127,7 @@ router.put("/:id", upload.array("files"), async (req, res) => {
     res.status(200).json(property);
   } catch (error) {
     console.error("Error updating property:", error);
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
