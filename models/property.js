@@ -8,30 +8,24 @@ const PropertySchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  price: {
-    type: Number,
-    required: true,
-  },
+
   slot: {
     type: String,
     // required: true,
   },
   slotSize: {
     type: String,
-    // required: true,
+    required: true,
   },
    slotPrice: {
     type: String,
-    // required: true,
+    required: true,
   },
-  project: {
-    type: String,
-    // required: true,
-  },
-  location: {
+  projectLocation: {
     type: String,
     required: true,
   },
+
   images: {
     type: [String],
     required: true,

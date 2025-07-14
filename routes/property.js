@@ -29,13 +29,14 @@ const uploadToCloudinary = (buffer, mimetype) => {
 //  Create a new property with images and videos
 router.post("/", upload.array("files"), async (req, res) => {
   try {
-    const { title, description, price, slot, slotSize, project, location } =
+    const { title, description, slot, slotSize, slotPrice, projectLocation } =
       req.body;
 
-    // Validate required fields
-    if (!title || !description || !price || !location) {
+    // Validate required fields (updated according to schema)
+    if (!title || !description || !slotSize || !slotPrice || !projectLocation) {
       return res.status(400).json({
-        message: "Title, description, price, and location are required",
+        message:
+          "Title, description, slotSize, slotPrice, and projectLocation are required",
       });
     }
 
@@ -58,11 +59,10 @@ router.post("/", upload.array("files"), async (req, res) => {
     const property = new Property({
       title,
       description,
-      price,
       slot,
       slotSize,
-      project,
-      location,
+      slotPrice,
+      projectLocation,
       images: uploadedImages,
       videos: uploadedVideos,
     });
