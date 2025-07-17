@@ -75,6 +75,28 @@ router.post("/", upload.array("files"), async (req, res) => {
   }
 });
 
+// Reduce property slot after purchase
+router.put("/:id/reduce-slot", async (req, res) => {
+  try {
+    const property = await Property.findById(req.params.id);
+    if (!property)
+      return res.status(404).json({ message: "Property not found" });
+
+    if (property.slot === 0) {
+      return res.status(400).json({ message: "No slots available" });
+    }
+
+    property.slot -= 1;
+    await property.save();
+
+    res.status(200).json({ message: "Slot updated", slot: property.slot });
+  } catch (error) {
+    console.error("Error reducing slot:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 //  Update a property by ID
 router.put("/:id", upload.array("files"), async (req, res) => {
   try {
