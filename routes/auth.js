@@ -4,7 +4,8 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
 
 const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET;
+require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET || "fallbackSecretKey";
 
 // Sign Up
 const generateReferralCode = require("../utils/generateReferral");
@@ -27,7 +28,7 @@ router.post("/signup", async (req, res) => {
       phone,
       password: hashedPassword,
       referralCode,
-      referredBy: referalId || null,
+      referredBy: referalId || null, // store who referred them
     });
 
     await newUser.save();
@@ -54,20 +55,36 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.json({
-      token,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        referalId: user.referalId,
-      },
-    });
+   res.json({
+  token,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    referralCode: user.referralCode, 
+    referredBy: user.referredBy,   
+  },
+});
+
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error" });
   }
 });
+// router.get("/invited/:referralCode", async (req, res) => {
+//   try {
+//     const { referralCode } = req.params;
+
+//     // Find all users whose referredBy matches this referral code
+//     const invitedUsers = await User.find({ referredBy: referralCode })
+//       .select("name email");
+
+//     res.json(invitedUsers);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ msg: "Server error" });
+//   }
+// });
 
 module.exports = router;

@@ -8,11 +8,14 @@ const propertyRouter = require("./routes/property.js");
 const app = express();
 dotenv.config();
 
+
+
 // Connect to DB
 connectDB();
 
 // Middleware
 app.use(express.json());
+
 
 // CORS setup (fixed)
 app.use(
@@ -32,6 +35,9 @@ app.use(
 // Routes
 app.use("/api/auth", router);
 app.use("/api/v1/properties", propertyRouter);
+app.use("/api/admin", require("./routes/admin"));
+app.use("/api/affiliate", require("./routes/affiliate"));
+
 
 // Start server
 app.listen(process.env.PORT || 5000, () => {
