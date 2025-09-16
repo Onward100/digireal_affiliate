@@ -8,14 +8,11 @@ const propertyRouter = require("./routes/property.js");
 const app = express();
 dotenv.config();
 
-
-
 // Connect to DB
 connectDB();
 
 // Middleware
 app.use(express.json());
-
 
 // CORS setup (fixed)
 app.use(
@@ -26,9 +23,10 @@ app.use(
       "http://localhost:3001",
       "http://localhost:3000",
       "http://digireal.net",
+      "https://www.digireal.net",
       "https://digireal-affiliate-jw3j.onrender.com",
     ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
@@ -38,7 +36,6 @@ app.use("/api/auth", router);
 app.use("/api/v1/properties", propertyRouter);
 app.use("/api/admin", require("./routes/admin"));
 app.use("/api/affiliate", require("./routes/affiliate"));
-
 
 // Start server
 app.listen(process.env.PORT || 5000, () => {
