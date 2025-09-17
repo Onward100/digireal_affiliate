@@ -20,10 +20,10 @@ app.use(
     origin: [
       process.env.CORS_ORIGIN,
       "http://localhost:5000",
-      "http://localhost:3001",
       "http://localhost:3000",
       "http://digireal.net",
       "https://www.digireal.net",
+      "https://digireal-admin.vercel.app",
       "https://digireal-affiliate-jw3j.onrender.com",
     ],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
